@@ -43,7 +43,7 @@ class Trainer:
             # pred
             output = self.model(x)            
             #calculate loss
-            loss = self.criterion(outputs, y)
+            loss = self.criterion(output, y)
             # backward propagation
             loss.backward()
             self.optimizer.step()
@@ -52,12 +52,12 @@ class Trainer:
             # preds calculated
             preds = torch.argmax(output, dim=1)
             # append to all_preds and all_targets
-            all_preds.extend(preds)
-            all_targets.extend(y)
+            all_preds.append(preds)
+            all_targets.append(y)
         
         # training loss
         training_loss = total_loss/len(data)
-        return training_loss, all_preds, all_targets
+        return training_loss, torch.cat(all_preds), torch.cat(all_targets)
     
     # public method to train complete model
     def fit(self, epochs, save_path, checkpoint):
@@ -65,7 +65,7 @@ class Trainer:
         metrics = []
         
         # make a save path
-        os.makedirs(save_path, exist_ok=True)
+        os.makedirs(f"{save_path}/models", exist_ok=True)
         
         # loop each epoch to train
         for epoch in range(1, epochs+1):
