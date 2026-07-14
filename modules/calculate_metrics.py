@@ -6,7 +6,13 @@ def calculate_metrics(actual, predicted, prefix=""):
 
     return {
         f"{prefix}accuracy": accuracy_score(actual, predicted),
-        f"{prefix}precision": precision_score(actual, predicted, average="macro"),
-        f"{prefix}recall": recall_score(actual, predicted, average="macro"),
-        f"{prefix}f1_score": f1_score(actual, predicted, average="macro")
+        f"{prefix}precision": precision_score(
+            actual, predicted, average="macro", zero_division=0
+        ),
+        f"{prefix}recall": recall_score(
+            actual, predicted, average="macro", zero_division=0
+        ),
+        f"{prefix}f1_score": f1_score(
+            actual, predicted, average="macro", zero_division=0
+        )
     }
