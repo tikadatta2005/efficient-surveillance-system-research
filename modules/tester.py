@@ -39,3 +39,4 @@ def test(model, save_path, data, criterion, device):
     # convert to pandas
     metrics = pd.DataFrame(metrics)
     metrics.to_csv(os.path.join(f"{save_path}/test_metrics.csv"), index=False)
+    return metrics

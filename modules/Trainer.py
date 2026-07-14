@@ -100,3 +100,4 @@ class Trainer:
         # save metrics to directory
         metrics = pd.DataFrame(metrics)
         metrics.to_csv(os.path.join(save_path, f"train_val_metrics.csv"), index=False)
+        return metrics
