@@ -15,9 +15,10 @@ def evaluator(model, data, criterion, device):
         y = y.to(device)
         # predict
         output = model(x)
-        pred = torch.argmax(output, dim=1)
         # calculate loss
-        loss = criterion(pred, y)
+        loss = criterion(output, y)
+        # make prediction
+        pred = torch.argmax(output, dim=1)
         # add to total loss
         total_loss += loss.item()
         # append to all preds and targets

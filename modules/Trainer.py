@@ -74,7 +74,7 @@ class Trainer:
             training_metrics = calculate_metrics(training_targets, training_preds, "train_")
             # save
             if epoch%checkpoint == 0:
-                torch.save(self.model.state_dict(), os.path.join(save_path, f"/models/epoch_{epoch}.pt"))      
+                torch.save(self.model.state_dict(), os.path.join(f"{save_path}/models", f"epoch_{epoch}.pt"))      
             # validation
             validation_loss, validation_preds, validation_targets = evaluator(
                 self.model, 
