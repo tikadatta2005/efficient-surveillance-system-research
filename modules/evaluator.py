@@ -23,7 +23,7 @@ def evaluator(model, data, criterion, device):
         total_loss += loss.item()
         # append to all preds and targets
         all_preds.append(pred)
-        all_targets.append(target)
+        all_targets.append(y)
     
     # calculate evalloss
     eval_loss = total_loss/len(data)
