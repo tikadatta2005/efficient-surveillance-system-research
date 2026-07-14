@@ -4,7 +4,7 @@ import pandas as pd
 from modules.calculate_metrics import calculate_metrics
 from modules.evaluator import evaluator
 
-def tester(model, save_path, data, criterion, device):
+def test(model, save_path, data, criterion, device):
     # check points file
     model_files = [
             f for f in os.listdir(f"{save_path}/models")
