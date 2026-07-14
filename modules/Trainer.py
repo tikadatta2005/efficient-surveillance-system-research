@@ -1,6 +1,6 @@
 import torch
-import modules.calculate_metrics
-import modules.evaluator
+from modules.calculate_metrics import calculate_metrics
+from modules.evaluator import evaluator
 from pathlib import Path
 import pandas as pd
 import os

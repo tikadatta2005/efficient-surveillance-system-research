@@ -1,8 +1,8 @@
 import torch
 import copy
 import pandas as pd
-import modules.evaluator
-import modules.calculate_metrics
+from modules.calculate_metrics import calculate_metrics
+from modules.evaluator import evaluator
 
 def tester(model, save_path, data, criterion, device):
     # check points file
