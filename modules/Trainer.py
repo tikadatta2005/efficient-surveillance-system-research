@@ -58,7 +58,7 @@ class Trainer:
         return training_loss, all_preds, all_targets
     
     # public method to train complete model
-    def train(self, epochs, save_path, checkpoint):
+    def fit(self, epochs, save_path, checkpoint):
         # metrics epoch
         metrics = []
         
