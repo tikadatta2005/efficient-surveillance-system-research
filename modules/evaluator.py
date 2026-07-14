@@ -15,7 +15,7 @@ def evaluator(model, data, criterion, device):
         y = y.to(device)
         # predict
         output = model(x)
-        pred = torch.argmax(output)
+        pred = torch.argmax(output, dim=1)
         # calculate loss
         loss = criterion(pred, y)
         # add to total loss

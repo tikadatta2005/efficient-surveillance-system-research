@@ -1,0 +1,93 @@
+import torch
+import modules.calculate_metrics
+import modules.evaluator
+from pathlib import Path
+import os
+
+class Trainer:
+    def __init__(
+        self,
+        model,
+        train_dataloader,
+        val_dataloader,
+        optimizer,
+        device="cuda",
+        criterion=None
+        ):
+        
+        self.train_data = train_dataloader
+        self.val_data = val_dataloader
+        self.optimizer = optimizer
+        self.device = device
+        self.criterion = criterion or torch.nn.CrossEntropyLoss()
+    
+    # private method to single run of model
+    def __train_one_epoch(self, data):
+        # enable training mode
+        self.model.train()
+        # total loss
+        total_loss = 0
+        # preds and targets
+        all_preds = []
+        all_targets = []
+        # loop on each batch
+        for x,y in data:
+            # convert to the device type
+            x = x.to(self.device)
+            y = y.to(self.device)
+            # use optimizer
+            self.optimizer.zero_grad()
+            # pred
+            output = self.model(x)            
+            #calculate loss
+            loss = self.criterion(outputs, y)
+            # backward propagation
+            loss.backward()
+            self.optimizer.step()
+            # add to total loss
+            total_loss += loss.item()
+            # preds calculated
+            preds = torch.argmax(output, dim=1)
+            # append to all_preds and all_targets
+            all_preds.extend(preds)
+            all_targets.extend(y)
+        
+        # training loss
+        training_loss = total_loss/len(data)
+        return training_loss, all_preds, all_targets
+    
+    # public method to train complete model
+    def train(self, epochs, save_path, checkpoint):
+        # metrics epoch
+        metrics = []
+        
+        # make a save path
+        save_path = Path(save_path)
+        os.makedirs(save_path, exist_ok=True)
+        
+        # loop each epoch to train
+        for epoch in range(1, epochs+1):
+            # training 
+            training_loss, training_preds, training_targets = self.__train_one_epoch(self.train_data)
+            training_metrics = calculate_metrics(training_targets, training_preds, "train_")
+            # save
+            if epoch%checkpoint == 0:
+                torch.save(self.model.state_dict(), save_path)      
+            # validation
+            validation_loss, validation_preds, validation_targets = evaluator(
+                self.model, 
+                self.val_data, 
+                self.criterion, 
+                self.device
+                )
+            validation_metrics = calculate_metrics(validation_targets, validation_preds, "val_")
+            # complete metrics
+            metrics.append({
+                "epoch":epoch,
+                "train_loss": training_loss,
+                "val_loss": validation_loss,
+                **training_metrics,
+                **validation_metrics
+            })
+            # print to show a little status
+            print(f"EPOCH {epoch} completed | Training Loss = {training_loss} | Validation Loss = {validation_loss}")
