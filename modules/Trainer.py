@@ -16,11 +16,13 @@ class Trainer:
         criterion=None
         ):
         
+        self.model = model
         self.train_data = train_dataloader
         self.val_data = val_dataloader
         self.optimizer = optimizer
         self.device = device
         self.criterion = criterion or torch.nn.CrossEntropyLoss()
+        self.model.to(device)
     
     # private method to single run of model
     def __train_one_epoch(self, data):
@@ -89,8 +91,11 @@ class Trainer:
                 **training_metrics,
                 **validation_metrics
             })
+            if epoch==0:
+                print(f"Trainer working properly!")
             # print to show a little status
-            print(f"EPOCH {epoch} completed | Training Loss = {training_loss} | Validation Loss = {validation_loss}")
+            if (epoch+1)%5==0:
+                print(f"EPOCH {epoch} completed | Training Loss = {training_loss} | Validation Loss = {validation_loss}")
         
         # save metrics to directory
         metrics = pd.DataFrame(metrics)

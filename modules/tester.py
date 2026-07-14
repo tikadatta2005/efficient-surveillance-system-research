@@ -5,6 +5,8 @@ from modules.calculate_metrics import calculate_metrics
 from modules.evaluator import evaluator
 
 def test(model, save_path, data, criterion, device):
+    # set model to device
+    model.to(device)
     # check points file
     model_files = [
             f for f in os.listdir(f"{save_path}/models")
