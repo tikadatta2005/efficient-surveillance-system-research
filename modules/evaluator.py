@@ -27,4 +27,4 @@ def evaluator(model, data, criterion, device):
     # calculate evalloss
     eval_loss = total_loss/len(data)
     # return the loss, preds and targets
-    return eval, all_preds, all_targets       
+    return eval_loss, all_preds, all_targets

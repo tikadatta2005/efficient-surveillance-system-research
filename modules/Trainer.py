@@ -63,7 +63,6 @@ class Trainer:
         metrics = []
         
         # make a save path
-        save_path = Path(save_path)
         os.makedirs(save_path, exist_ok=True)
         
         # loop each epoch to train
@@ -73,7 +72,7 @@ class Trainer:
             training_metrics = calculate_metrics(training_targets, training_preds, "train_")
             # save
             if epoch%checkpoint == 0:
-                torch.save(self.model.state_dict(), os.path.join(save_path, f"epoch_{epoch}.pt"))      
+                torch.save(self.model.state_dict(), os.path.join(save_path, f"/models/epoch_{epoch}.pt"))      
             # validation
             validation_loss, validation_preds, validation_targets = evaluator(
                 self.model, 
@@ -95,4 +94,4 @@ class Trainer:
         
         # save metrics to directory
         metrics = pd.DataFrame(metrics)
-        metrics.to_csv(os.path.join(save_path, f"metrics.csv"), index=Flase)
+        metrics.to_csv(os.path.join(save_path, f"train_val_metrics.csv"), index=Flase)
