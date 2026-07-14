@@ -2,6 +2,7 @@ import torch
 import modules.calculate_metrics
 import modules.evaluator
 from pathlib import Path
+import pandas as pd
 import os
 
 class Trainer:
@@ -72,7 +73,7 @@ class Trainer:
             training_metrics = calculate_metrics(training_targets, training_preds, "train_")
             # save
             if epoch%checkpoint == 0:
-                torch.save(self.model.state_dict(), save_path)      
+                torch.save(self.model.state_dict(), os.path.join(save_path, f"epoch_{epoch}.pt"))      
             # validation
             validation_loss, validation_preds, validation_targets = evaluator(
                 self.model, 
@@ -91,3 +92,7 @@ class Trainer:
             })
             # print to show a little status
             print(f"EPOCH {epoch} completed | Training Loss = {training_loss} | Validation Loss = {validation_loss}")
+        
+        # save metrics to directory
+        metrics = pd.DataFrame(metrics)
+        metrics.to_csv(os.path.join(save_path, f"metrics.csv"), index=Flase)
