@@ -95,7 +95,7 @@ class Trainer:
                 print(f"Trainer working properly!")
             # print to show a little status
             if (epoch+1)%5==0:
-                print(f"EPOCH {epoch} completed | Training Loss = {training_loss} | Validation Loss = {validation_loss}")
+                print(f"EPOCH {epoch+1} completed | Training Loss = {training_loss} | Validation Loss = {validation_loss}")
         
         # save metrics to directory
         metrics = pd.DataFrame(metrics)
