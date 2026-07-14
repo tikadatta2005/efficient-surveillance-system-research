@@ -22,10 +22,10 @@ def evaluator(model, data, criterion, device):
         # add to total loss
         total_loss += loss.item()
         # append to all preds and targets
-        all_preds.extend(pred)
-        all_targets.extend(target)
+        all_preds.append(pred)
+        all_targets.append(target)
     
     # calculate evalloss
     eval_loss = total_loss/len(data)
     # return the loss, preds and targets
-    return eval_loss, all_preds, all_targets
+    return eval_loss, torch.cat(all_preds), torch.cat(all_targets)
