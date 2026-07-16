@@ -14,7 +14,7 @@ def test(model, save_path, data, criterion, device):
     # load state dict
     test_model.load_state_dict(checkpoint)
     # evaluate model  
-    test_loss, test_preds, test_targets = evaluator(model, data, criterion, device)
+    test_loss, test_preds, test_targets = evaluator(test_model, data, criterion, device)
     # get metric 
     metric = calculate_metrics(test_targets, test_preds, prefix="test_")
     # show loss
