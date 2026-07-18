@@ -11,7 +11,7 @@ def sub_plots(row, col, pos, data, x, y, x_label, y_label, title):
     # show all plots
     for y_name in y:
         # line plot
-        sns.lineplot(data=data, x=x, y=y_name, label=y_name)
+        sns.lineplot(data=data, x=x, y=y_name, label=y_name, palette="colorblind")
 
     # show legend
     plt.legend()
