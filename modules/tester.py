@@ -20,4 +20,4 @@ def test(model, save_path, data, criterion, device):
     # show loss
     metric["test_loss"] = test_loss
     # return metric
-    return metric
+    return metric, test_preds, test_targets

@@ -4,3 +4,7 @@
 /datasets/**
 
 **/models/**
+
+/modules/generate_training_plots.py
+
+additional_steps.ipynb
