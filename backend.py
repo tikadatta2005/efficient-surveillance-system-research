@@ -8,20 +8,32 @@ from torchvision import transforms
 import io
 
 
-# Loss (not required for inference, kept if needed)
-criterion = nn.CrossEntropyLoss()
+app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+device = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
 
 
 def add_conv_layers(model, layers=1, skip_pool=0):
 
     in_channels = 3
     out_channels = 8
-
     size = 64
 
     skip_pool = skip_pool + 1
-
-    total_conv_params = 0
 
     for layer in range(layers):
 
@@ -37,65 +49,54 @@ def add_conv_layers(model, layers=1, skip_pool=0):
             nn.ReLU()
         )
 
-        total_conv_params += (
-            ((3 * 3 * in_channels) + 1) * out_channels
-        ) + (2 * out_channels)
-
-
         if (layer + 1) % skip_pool == 0:
             model.add(
-                nn.MaxPool2d(2, 2)
+                nn.MaxPool2d(2,2)
             )
-            size = size // 2
+            size //= 2
 
 
         if layer < layers - 1:
             in_channels = out_channels
-            out_channels = out_channels * 2
+            out_channels *= 2
 
 
-    return total_conv_params, out_channels, size
+    return out_channels, size
 
-
-
-app = FastAPI()
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-
-# Device
-device = torch.device(
-    "cuda" if torch.cuda.is_available() else "cpu"
-)
-
-
-# Load architecture
 model = Architecture()
 
-add_conv_layers(
+
+out_channels, size = add_conv_layers(
     model,
     layers=8,
-    skip_pool=2
+    skip_pool=1     # IMPORTANT: same as training
 )
 
 
-# Load trained weights
+n_in = out_channels * size * size
+
+
+model.add(
+    nn.Flatten(),
+
+    nn.Linear(n_in,128),
+
+    nn.ReLU(),
+
+    nn.Linear(128,3)
+)
+
+
 checkpoint = torch.load(
     "./exp/e8_8_ext_e7_momentum/models/epoch_94.pt",
     map_location=device
 )
 
-model.load_state_dict(checkpoint)
+
+model.load_state_dict(
+    checkpoint,
+    strict=True
+)
 
 
 model = model.to(device)
@@ -103,17 +104,17 @@ model = model.to(device)
 model.eval()
 
 
-# Same preprocessing as training
 transform = transforms.Compose([
-    transforms.Resize((64, 64)),
+    transforms.Resize((64,64)),
     transforms.ToTensor()
 ])
 
 
+
 classes = {
-    0: "Armed",
-    1: "Fight",
-    2: "Other"
+    0:"Armed",
+    1:"Fight",
+    2:"Other"
 }
 
 
@@ -124,7 +125,6 @@ async def predict(
 ):
 
     image_bytes = await file.read()
-
 
     image = Image.open(
         io.BytesIO(image_bytes)
@@ -140,20 +140,19 @@ async def predict(
 
         output = model(image)
 
-        prediction = torch.argmax(
+        pred = torch.argmax(
             output,
             dim=1
         ).item()
 
 
-    print(
-        "Prediction:",
-        prediction,
-        classes[prediction]
-    )
+    result = classes[pred]
+
+
+    print("Prediction:", result)
 
 
     return {
-        "prediction": classes[prediction],
-        "class_id": prediction
+        "prediction": result,
+        "class_id": pred
     }
