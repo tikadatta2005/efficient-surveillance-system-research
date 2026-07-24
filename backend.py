@@ -88,7 +88,7 @@ model.add(
 
 
 checkpoint = torch.load(
-    "./exp/e8_8_ext_e7_momentum/models/epoch_94.pt",
+    "./model_v1_epoch_94.pt",
     map_location=device
 )
 
